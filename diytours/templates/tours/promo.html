@@ -1,0 +1,25 @@
+{% extends 'tours/base.html' %}
+
+{% block title %}Discounted Tours{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Discounted Tours</h1>
+    {% if tour %}
+        <div class="row">
+            {% for t in tour %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ t.featured_image.url }}" class="card-img-top" alt="{{ t.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ t.title }}</h5>
+                            <p class="card-text">Promo Price: ${{ t.promos.first.discounted_price }}</p>
+                            <a href="{% url 'tour_detail' t.title %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tours on promo at the moment.</p>
+    {% endif %}
+{% endblock %}

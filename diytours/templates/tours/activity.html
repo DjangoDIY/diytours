@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tours with Activity: {{ activity }}</title>
+</head>
+<body>
+    <h1>Tours with Activity: {{ activity }}</h1>
+    {% if tour %}
+        <ul>
+            {% for t in tour %}
+                <li><a href="{% url 'tour_detail' t.title %}">{{ t.title }}</a> - {{ t.description }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tours found with this activity.</p>
+    {% endif %}
+</body>
+</html>

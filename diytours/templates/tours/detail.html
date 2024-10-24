@@ -1,0 +1,182 @@
+{% extends 'tours/base.html' %}
+
+{% block title %}{{ tour.title }} - Tour Details{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tour.title }} - Tour Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .tour-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .gallery {
+            position: relative;
+            text-align: center;
+        }
+        .gallery img {
+            width: 100%;
+            max-height: 500px; /* Fixed height for uniformity */
+            object-fit: cover; /* Ensures the aspect ratio is maintained */
+            border-radius: 8px;
+            display: none; /* Hide images by default */
+        }
+        .gallery img.active {
+            display: block; /* Show active image */
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-button.left {
+            left: 10px;
+        }
+        .nav-button.right {
+            right: 10px;
+        }
+        /* Lightbox styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ tour.title }}</h1>
+        <div class="gallery">
+            <h2>Gallery</h2>
+            <img src="{{ tour.featured_image.url }}" alt="{{ tour.title }} Featured Image" class="active">
+            {% for image in tour.images.all %}
+                <img src="{{ image.image.url }}" alt="Image related to {{ tour.title }}">
+            {% empty %}
+                <p>No additional images available.</p>
+            {% endfor %}
+            <button class="nav-button left" id="prevBtn">&lt;</button>
+            <button class="nav-button right" id="nextBtn">&gt;</button>
+        </div>
+        <div class="tour-description">
+            <h2>Description</h2>
+            <p>{{ tour.description }}</p>
+        </div>
+        <div class="tour-info">
+            <h2>Tour Information</h2>
+            <ul>
+                <li><strong>Duration:</strong> {{ tour.duration_days }} days, {{ tour.duration_night }} nights</li>
+                <li><strong>Regular Price:</strong> ${{ tour.regular_price }}</li>
+                <li><strong>Max People:</strong> {{ tour.max_people }}</li>
+                <li class="{% if tour.published %}published{% endif %}"><strong>Published:</strong> {{ tour.published|yesno:"Yes,No" }}</li>
+            </ul>
+        </div>
+        
+        <!-- Lightbox -->
+        <div class="lightbox" id="lightbox">
+            <span class="close" id="close">&times;</span>
+            <img id="lightbox-img" src="" alt="Lightbox Image">
+        </div>
+    </div>
+
+    <script>
+        const images = document.querySelectorAll('.gallery img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.getElementById('close');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        let currentIndex = 0;
+
+        function showImage(index) {
+            images.forEach((img, i) => {
+                img.classList.remove('active');
+                if (i === index) {
+                    img.classList.add('active');
+                }
+            });
+        }
+
+        function updateLightboxImage() {
+            lightboxImg.src = images[currentIndex].src;
+        }
+
+        images.forEach((image, index) => {
+            image.addEventListener('click', () => {
+                currentIndex = index;
+                updateLightboxImage();
+                lightbox.style.display = 'flex';
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+
+        lightbox.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+            showImage(currentIndex);
+            updateLightboxImage();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+            showImage(currentIndex);
+            updateLightboxImage();
+        });
+
+        // Show the first image initially
+        showImage(currentIndex);
+    </script>
+</body>
+{% endblock %}

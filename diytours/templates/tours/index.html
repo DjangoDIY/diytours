@@ -1,0 +1,25 @@
+{% extends 'tours/base.html' %}
+
+{% block title %}Tours List{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">All Available Tours</h1>
+    {% if tours %}
+        <div class="row">
+            {% for tour in tours %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ tour.featured_image.url }}" class="card-img-top" alt="{{ tour.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tour.title }}</h5>
+                            <p class="card-text">{{ tour.description|truncatechars:100 }}</p>
+                            <a href="{% url 'tour_detail' tour.title %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tours found!</p>
+    {% endif %}
+{% endblock %}
